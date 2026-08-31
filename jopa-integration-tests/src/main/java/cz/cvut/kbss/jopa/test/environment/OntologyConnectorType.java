@@ -33,7 +33,11 @@ public enum OntologyConnectorType {
     /**
      * Virtuoso ontology connector. Name: {@literal virtuoso}
      */
-    VIRTUOSO("virtuoso", "cz.cvut.kbss.ontodriver.virtuoso.VirtuosoDataSource");
+    VIRTUOSO("virtuoso", "cz.cvut.kbss.ontodriver.virtuoso.VirtuosoDataSource"),
+    /**
+     * Tentris ontology connector. Name: {@literal tentris}
+     */
+    TENTRIS("tentris", "cz.cvut.kbss.ontodriver.tentris.TentrisDataSource");
 
     private final String name;
 
