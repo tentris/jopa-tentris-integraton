@@ -6,12 +6,12 @@ import cz.cvut.kbss.ontodriver.rdf4j.connector.ConnectionFactory;
 import cz.cvut.kbss.ontodriver.rdf4j.connector.init.FactoryOfFactories;
 import cz.cvut.kbss.ontodriver.rdf4j.loader.DefaultStatementLoaderFactory;
 import cz.cvut.kbss.ontodriver.rdf4j.loader.StatementLoaderFactory;
-import cz.cvut.kbss.ontodriver.virtuoso.connector.VirtuosoConnectionFactory;
+import cz.cvut.kbss.ontodriver.tentris.connector.TentrisConnectionFactory;
 import org.eclipse.rdf4j.common.transaction.IsolationLevel;
 import org.eclipse.rdf4j.common.transaction.IsolationLevels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import cz.cvut.kbss.ontodriver.tentris.expections.TentrisDriverExpection;
+import cz.cvut.kbss.ontodriver.tentris.exception.TentrisDriverException;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -27,12 +27,12 @@ class TentrisFactoryOfFactories implements FactoryOfFactories {
     }
 
     @Override
-    public ConnectionFactory createConnectorFactory() throws TentrisDriverExpection {
+    public ConnectionFactory createConnectorFactory() throws TentrisDriverException {
         return new TentrisConnectionFactory(configuration, getTxIsolationLevel(configuration));
     }
 
     private static IsolationLevel getTxIsolationLevel(
-            DriverConfiguration configuration) throws TentrisDriverExpection {
+            DriverConfiguration configuration) throws TentrisDriverException {
         final String isolationLevelConfig = configuration.getProperty(Rdf4jConfigParam.TRANSACTION_ISOLATION_LEVEL);
         if (isolationLevelConfig != null) {
             final Optional<IsolationLevels> optionalLevel = Stream.of(IsolationLevels.values())
@@ -40,7 +40,7 @@ class TentrisFactoryOfFactories implements FactoryOfFactories {
                                                                                         .equals(isolationLevelConfig))
                                                                   .findAny();
             if (optionalLevel.isEmpty()) {
-                throw new VirtuosoDriverException("Unsupported transaction isolation level value '" + isolationLevelConfig + "'.");
+                throw new TentrisDriverException("Unsupported transaction isolation level value '" + isolationLevelConfig + "'.");
             }
             LOG.debug("Configured to use RDF4J transaction isolation level '{}'.", optionalLevel.get());
             return optionalLevel.get();

@@ -18,7 +18,7 @@ import cz.cvut.kbss.ontodriver.rdf4j.config.RuntimeConfiguration;
 import cz.cvut.kbss.ontodriver.rdf4j.connector.ConnectionFactory;
 import cz.cvut.kbss.ontodriver.rdf4j.exception.Rdf4jDriverException;
 import cz.cvut.kbss.ontodriver.rdf4j.loader.StatementLoaderFactory;
-import cz.cvut.kbss.ontodriver.tentris.exception.TentrisDriverExpection;
+import cz.cvut.kbss.ontodriver.tentris.exception.TentrisDriverException;
 import cz.cvut.kbss.ontodriver.tentris.config.TentrisConfigParam;
 
 import java.util.HashSet;
@@ -40,7 +40,7 @@ class TentrisDriver implements AutoCloseable, ConnectionListener<Rdf4jConnection
     private final Set<Rdf4jConnection> openConnections = new HashSet<>();
 
     TentrisDriver(OntologyStorageProperties storageProperties,
-                   Map<String, String> properties) throws TentrisDriverExpection {
+                   Map<String, String> properties) throws TentrisDriverException {
         assert storageProperties != null;
         assert properties != null;
 

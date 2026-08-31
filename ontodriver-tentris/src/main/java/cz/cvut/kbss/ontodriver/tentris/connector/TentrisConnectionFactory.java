@@ -5,7 +5,7 @@ import cz.cvut.kbss.ontodriver.exception.OntoDriverException;
 import cz.cvut.kbss.ontodriver.rdf4j.connector.ConnectionFactory;
 import cz.cvut.kbss.ontodriver.rdf4j.connector.RepoConnection;
 import cz.cvut.kbss.ontodriver.rdf4j.connector.StorageConnection;
-import cz.cvut.kbss.ontodriver.virtuoso.TentrisDriverExpection;
+import cz.cvut.kbss.ontodriver.tentris.exception.TentrisDriverException;
 import org.eclipse.rdf4j.common.transaction.IsolationLevel;
 import org.eclipse.rdf4j.repository.Repository;
 
@@ -17,7 +17,7 @@ public class TentrisConnectionFactory implements ConnectionFactory {
     private final IsolationLevel txIsolationLevel;
 
     public TentrisConnectionFactory(DriverConfiguration config,
-                                     IsolationLevel txIsolationLevel) throws TentrisDriverExpection {
+                                     IsolationLevel txIsolationLevel) throws TentrisDriverException {
         this.txIsolationLevel = txIsolationLevel;
         this.storageConnector = new TentrisStorageConnector(config);
         storageConnector.initializeRepository();
@@ -48,6 +48,6 @@ public class TentrisConnectionFactory implements ConnectionFactory {
 
     @Override
     public void setRepository(Repository repository) {
-        throw new UnsupportedOperationException("Not supported by Virtuoso driver.");
+        throw new UnsupportedOperationException("Not supported by Tentris driver.");
     }
 }

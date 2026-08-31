@@ -9,7 +9,8 @@ import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jConfigParam;
 import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jOntoDriverProperties;
 import cz.cvut.kbss.ontodriver.rdf4j.connector.Rdf4jConnectionProvider;
 import cz.cvut.kbss.ontodriver.rdf4j.exception.Rdf4jDriverException;
-import cz.cvut.kbss.ontodriver.virtuoso.TentrisDriverExpection;
+import cz.cvut.kbss.ontodriver.tentris.exception.TentrisDriverException;
+import cz.cvut.kbss.ontodriver.tentris.config.TentrisConfigParam;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
@@ -28,15 +29,15 @@ public class TentrisStorageConnector implements Closeable, Rdf4jConnectionProvid
     private boolean open;
     private Repository repository;
 
-    public TentrisStorageConnector(DriverConfiguration config) throws TentrisDriverExpection {
+    public TentrisStorageConnector(DriverConfiguration config) throws TentrisDriverException {
         this.configuration = config;
         this.maxReconnectAttempts = resolveMaxReconnectAttempts(config);
     }
 
-    private static int resolveMaxReconnectAttempts(DriverConfiguration config) throws TentrisDriverExpection {
+    private static int resolveMaxReconnectAttempts(DriverConfiguration config) throws TentrisDriverException {
         final int attempts = config.getProperty(Rdf4jConfigParam.RECONNECT_ATTEMPTS, Constants.DEFAULT_RECONNECT_ATTEMPTS_COUNT);
         if (attempts < 0) {
-            throw new TentrisDriverExpection(
+            throw new TentrisDriverException(
                     "Invalid value of configuration parameter " + Rdf4jOntoDriverProperties.RECONNECT_ATTEMPTS +
                             ". Must be a non-negative integer.");
         }
@@ -48,7 +49,18 @@ public class TentrisStorageConnector implements Closeable, Rdf4jConnectionProvid
         LOG.debug("Initializing connector to repository at {}", serverUri);
         final String username = configuration.getStorageProperties().getUsername();
         final String password = configuration.getStorageProperties().getPassword();
-        this.repository = new SPARQLRepository(serverUri);
+        final String query_endpoint = configuration.getProperty(TentrisConfigParam.QUERY_ENDPOINT);
+        final String update_endpoint = configuration.getProperty(TentrisConfigParam.UPDATE_ENDPOINT);
+
+        final SPARQLRepository repo = update_endpoint != null
+            ? new SPARQLRepository(serverUri + "/" + query_endpoint, serverUri + "/" + update_endpoint)
+            : new SPARQLRepository(serverUri + "/" + query_endpoint);
+
+        if (username != null && !username.isBlank() && password != null && !password.isBlank()) {
+            repo.setUsernameAndPassword(username, password);
+        }
+        repo.init();
+        this.repository = repo;
         this.open = true;
     }
 
@@ -96,7 +108,7 @@ public class TentrisStorageConnector implements Closeable, Rdf4jConnectionProvid
         if (repository instanceof Wrapper) {
             return ((Wrapper) repository).unwrap(cls);
         }
-        throw new VirtuosoDriverException("No class of type " + cls + " found.");
+        throw new TentrisDriverException("No class of type " + cls + " found.");
     }
 
     @Override
@@ -107,7 +119,7 @@ public class TentrisStorageConnector implements Closeable, Rdf4jConnectionProvid
         try {
             repository.shutDown();
         } catch (RuntimeException e) {
-            throw new VirtuosoDriverException("Exception caught when closing repository connector.", e);
+            throw new TentrisDriverException("Exception caught when closing repository connector.", e);
         } finally {
             this.open = false;
         }

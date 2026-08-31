@@ -4,6 +4,7 @@ import cz.cvut.kbss.ontodriver.Connection;
 import cz.cvut.kbss.ontodriver.DataSource;
 import cz.cvut.kbss.ontodriver.OntologyStorageProperties;
 import cz.cvut.kbss.ontodriver.exception.OntoDriverException;
+import cz.cvut.kbss.ontodriver.tentris.exception.TentrisDriverException;
 
 import java.util.Collections;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class TentrisDataSource implements DataSource {
         }
     }
 
-    private void ensureConnected() throws VirtuosoDriverException {
+    private void ensureConnected() throws TentrisDriverException {
         if (connected) {
             return;
         }
@@ -40,7 +41,7 @@ public class TentrisDataSource implements DataSource {
         if (properties == null) {
             this.properties = Collections.emptyMap();
         }
-        this.driver = new VirtuosoDriver(storageProperties, properties);
+        this.driver = new TentrisDriver(storageProperties, properties);
         this.connected = true;
     }
 

@@ -2,13 +2,13 @@ package cz.cvut.kbss.ontodriver.tentris.exception;
 
 import cz.cvut.kbss.ontodriver.exception.OntoDriverException;
 
-public class TentrisDriverExpection extends OntoDriverException {
+public class TentrisDriverException extends OntoDriverException {
     
-    public TentrisDriverExpection(String message) {
+    public TentrisDriverException(String message) {
         super(message);
     }
 
-    public TentrisDriverExpection(String message, Throwable cause) {
+    public TentrisDriverException(String message, Throwable cause) {
         super(message, cause);
     }
 } 
