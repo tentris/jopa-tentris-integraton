@@ -16,7 +16,6 @@ import java.util.Map;
 
 @EnabledIfSystemProperty(named = TentrisProperties.HOST, matches = ".+")
 @EnabledIfSystemProperty(named = TentrisProperties.PORT, matches = ".+")
-@EnabledIfSystemProperty(named = TentrisProperties.QUERY_ENDPOINT, matches = ".+")
 public class PolymorphicSelectQueryTest extends PolymorphicSelectQueryRunner {
 
     private static final Logger LOG = LoggerFactory.getLogger(PolymorphicSelectQueryTest.class);

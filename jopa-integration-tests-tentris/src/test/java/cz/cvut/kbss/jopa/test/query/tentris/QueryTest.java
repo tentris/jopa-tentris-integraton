@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIfSystemProperty(named = TentrisProperties.HOST, matches = ".+")
 @EnabledIfSystemProperty(named = TentrisProperties.PORT, matches = ".+")
-@EnabledIfSystemProperty(named = TentrisProperties.QUERY_ENDPOINT, matches = ".+")
 public class QueryTest extends QueryRunner {
 
     private static final Logger LOG = LoggerFactory.getLogger(QueryTest.class);
