@@ -28,9 +28,8 @@ import java.util.Set;
 
 class TentrisDriver implements AutoCloseable, ConnectionListener<Rdf4jConnection> {
 
-    private static final List<ConfigurationParameter> CONFIGS = List.of(DriverConfigParam.AUTO_COMMIT, 
-        Rdf4jConfigParam.LOAD_ALL_THRESHOLD, Rdf4jConfigParam.RECONNECT_ATTEMPTS,
-        TentrisConfigParam.QUERY_ENDPOINT, TentrisConfigParam.UPDATE_ENDPOINT);
+    private static final List<ConfigurationParameter> CONFIGS = List.of(DriverConfigParam.AUTO_COMMIT,
+        Rdf4jConfigParam.LOAD_ALL_THRESHOLD, Rdf4jConfigParam.RECONNECT_ATTEMPTS);
 
     private final DriverConfiguration configuration;
     private boolean open;
