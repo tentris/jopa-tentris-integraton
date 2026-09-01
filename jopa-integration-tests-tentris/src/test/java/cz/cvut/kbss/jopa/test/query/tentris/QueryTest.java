@@ -57,48 +57,4 @@ public class QueryTest extends QueryRunner {
     protected EntityManager getEntityManager() {
         return em;
     }
-
-    @Test
-    @Override
-    public void executeUpdateRunsUpdateOnRepository() {
-        final EntityManager em = getEntityManager();
-        final OWLClassA instance = QueryTestEnvironment.getData(OWLClassA.class).get(0);
-        final String newValue = "UpdatedValue";
-        final String update = "DELETE { GRAPH ?g { ?inst ?property ?origValue . } }" +
-                "INSERT { GRAPH <http://test> { ?inst ?property ?newValue . } } WHERE {" +
-                " GRAPH ?g { ?inst ?property ?origValue . } }";
-        em.createNativeQuery(update).setParameter("inst", instance.getUri()).setParameter("property", URI.create(
-                Vocabulary.P_A_STRING_ATTRIBUTE)).setParameter("newValue", newValue, "en").executeUpdate();
-
-        final OWLClassA result = em.find(OWLClassA.class, instance.getUri());
-        assertEquals(newValue, result.getStringAttribute());
-    }
-
-    @Test
-    @Override
-    public void executeUpdateRunsDeleteOnRepository() {
-        final EntityManager em = getEntityManager();
-        final OWLClassA instance = QueryTestEnvironment.getData(OWLClassA.class).get(0);
-        assertNotNull(instance.getStringAttribute());
-        final String update = "DELETE { GRAPH ?g { ?inst ?property ?origValue . } } WHERE { GRAPH ?g { ?inst ?property ?origValue . } }";
-        em.createNativeQuery(update).setParameter("inst", instance.getUri())
-          .setParameter("property", URI.create(Vocabulary.P_A_STRING_ATTRIBUTE)).executeUpdate();
-
-        final OWLClassA result = em.find(OWLClassA.class, instance.getUri());
-        assertNull(result.getStringAttribute());
-    }
-
-    @Test
-    @Override
-    public void executeUpdateRunsInsertOnRepository() {
-        final EntityManager em = getEntityManager();
-        final URI newType = Generators.generateUri();
-        final OWLClassA instance = QueryTestEnvironment.getData(OWLClassA.class).get(0);
-        final String update = "INSERT DATA { GRAPH <http://test> { ?inst a ?newType . } }";
-        em.createNativeQuery(update).setParameter("inst", instance.getUri())
-          .setParameter("newType", newType).executeUpdate();
-
-        final OWLClassA result = em.find(OWLClassA.class, instance.getUri());
-        assertTrue(result.getTypes().contains(newType.toString()));
-    }
 }

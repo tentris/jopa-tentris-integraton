@@ -63,13 +63,4 @@ public class TypedQueryTest extends TypedQueryRunner {
     public void askQueryAgainstTransactionalOntologyContainsUncommittedChangesAsWell() {
         // RDF4J does not support queries against transactional snapshot because it does not use it
     }
-
-    @Override
-    protected void cleanupClassMTestData() {
-        // Virtuoso requires a graph to be always specified
-        getEntityManager().getTransaction().begin();
-        getEntityManager().createNativeQuery("DELETE WHERE { GRAPH ?g { ?x a ?type . ?x ?y ?z . } }")
-                          .setParameter("type", URI.create(cz.cvut.kbss.jopa.test.Vocabulary.C_OWL_CLASS_M)).executeUpdate();
-        getEntityManager().getTransaction().commit();
-    }
 }
