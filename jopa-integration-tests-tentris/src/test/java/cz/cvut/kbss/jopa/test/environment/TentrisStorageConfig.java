@@ -35,12 +35,6 @@ public class TentrisStorageConfig extends StorageConfig {
         if (!password.isBlank()) {
             config.put(TentrisConfigParam.PASSWORD.toString(), password);
         }
-        if (System.getProperty(TentrisConfigParam.QUERY_ENDPOINT.toString()) != null) {
-            config.put(TentrisConfigParam.QUERY_ENDPOINT.toString(), System.getProperty(TentrisConfigParam.QUERY_ENDPOINT.toString()));
-        }
-        if (System.getProperty(TentrisConfigParam.UPDATE_ENDPOINT.toString()) != null) {
-            config.put(TentrisConfigParam.UPDATE_ENDPOINT.toString(), System.getProperty(TentrisConfigParam.UPDATE_ENDPOINT.toString()));
-        }
         return config;
     }
 }

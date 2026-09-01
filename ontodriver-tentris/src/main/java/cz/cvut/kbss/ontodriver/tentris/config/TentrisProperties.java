@@ -2,10 +2,6 @@ package cz.cvut.kbss.ontodriver.tentris.config;
 
 public final class TentrisProperties {
 
-    public static final String UPDATE_ENDPOINT = "cz.cvut.kbss.ontodriver.tentris.update-endpoint";
-
-    public static final String QUERY_ENDPOINT = "cz.cvut.kbss.ontodriver.tentris.query-endpoint";
-
     public static final String HOST = "cz.cvut.kbss.ontodriver.tentris.host";
 
     public static final String PORT = "cz.cvut.kbss.ontodriver.tentris.port";

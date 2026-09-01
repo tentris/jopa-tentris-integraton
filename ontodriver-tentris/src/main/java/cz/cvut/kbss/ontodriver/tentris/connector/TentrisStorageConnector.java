@@ -22,6 +22,8 @@ import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 public class TentrisStorageConnector implements Closeable, Rdf4jConnectionProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(TentrisStorageConnector.class);
+    private static final String QUERY_ENDPOINT = "sparql";
+    private static final String UPDATE_ENDPOINT = "update";
 
     private final DriverConfiguration configuration;
     private final int maxReconnectAttempts;
@@ -49,12 +51,8 @@ public class TentrisStorageConnector implements Closeable, Rdf4jConnectionProvid
         LOG.debug("Initializing connector to repository at {}", serverUri);
         final String username = configuration.getStorageProperties().getUsername();
         final String password = configuration.getStorageProperties().getPassword();
-        final String query_endpoint = configuration.getProperty(TentrisConfigParam.QUERY_ENDPOINT);
-        final String update_endpoint = configuration.getProperty(TentrisConfigParam.UPDATE_ENDPOINT);
 
-        final SPARQLRepository repo = update_endpoint != null
-            ? new SPARQLRepository(serverUri + "/" + query_endpoint, serverUri + "/" + update_endpoint)
-            : new SPARQLRepository(serverUri + "/" + query_endpoint);
+        final SPARQLRepository repo = new TentrisSparqlRepository(serverUri + "/" + QUERY_ENDPOINT, serverUri + "/" + UPDATE_ENDPOINT);
 
         if (username != null && !username.isBlank() && password != null && !password.isBlank()) {
             repo.setUsernameAndPassword(username, password);
