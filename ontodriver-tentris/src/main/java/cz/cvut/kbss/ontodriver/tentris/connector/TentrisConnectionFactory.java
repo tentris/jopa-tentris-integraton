@@ -4,7 +4,7 @@ import cz.cvut.kbss.ontodriver.config.DriverConfiguration;
 import cz.cvut.kbss.ontodriver.exception.OntoDriverException;
 import cz.cvut.kbss.ontodriver.rdf4j.connector.ConnectionFactory;
 import cz.cvut.kbss.ontodriver.rdf4j.connector.RepoConnection;
-import cz.cvut.kbss.ontodriver.rdf4j.connector.StorageConnection;
+//import cz.cvut.kbss.ontodriver.rdf4j.connector.StorageConnection;
 import cz.cvut.kbss.ontodriver.tentris.exception.TentrisDriverException;
 import org.eclipse.rdf4j.common.transaction.IsolationLevel;
 import org.eclipse.rdf4j.repository.Repository;
@@ -29,7 +29,7 @@ public class TentrisConnectionFactory implements ConnectionFactory {
         if (!open) {
             throw new IllegalStateException("The factory is closed!");
         }
-        return new StorageConnection(storageConnector, txIsolationLevel);
+        return new TentrisStorageConnection(storageConnector, txIsolationLevel);
     }
 
     @Override

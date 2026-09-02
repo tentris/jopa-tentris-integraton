@@ -4,9 +4,9 @@ import cz.cvut.kbss.ontodriver.config.DriverConfiguration;
 import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jConfigParam;
 import cz.cvut.kbss.ontodriver.rdf4j.connector.ConnectionFactory;
 import cz.cvut.kbss.ontodriver.rdf4j.connector.init.FactoryOfFactories;
-import cz.cvut.kbss.ontodriver.rdf4j.loader.DefaultStatementLoaderFactory;
 import cz.cvut.kbss.ontodriver.rdf4j.loader.StatementLoaderFactory;
 import cz.cvut.kbss.ontodriver.tentris.connector.TentrisConnectionFactory;
+import cz.cvut.kbss.ontodriver.tentris.loader.TentrisStatementLoaderFactory;
 import org.eclipse.rdf4j.common.transaction.IsolationLevel;
 import org.eclipse.rdf4j.common.transaction.IsolationLevels;
 import org.slf4j.Logger;
@@ -50,6 +50,6 @@ class TentrisFactoryOfFactories implements FactoryOfFactories {
 
     @Override
     public StatementLoaderFactory createStatementLoaderFactory() {
-        return new DefaultStatementLoaderFactory();
+        return new TentrisStatementLoaderFactory();
     }
 }
