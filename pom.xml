@@ -34,6 +34,7 @@
         <module>jopa-integration-tests-virtuoso</module>
         <module>jopa-integration-tests-tentris</module>
         <module>jopa-distribution</module>
+        <module>jopa-examples</module>
     </modules>
 
     <properties>
