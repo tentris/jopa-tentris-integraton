@@ -19,7 +19,6 @@ import cz.cvut.kbss.ontodriver.rdf4j.connector.ConnectionFactory;
 import cz.cvut.kbss.ontodriver.rdf4j.exception.Rdf4jDriverException;
 import cz.cvut.kbss.ontodriver.rdf4j.loader.StatementLoaderFactory;
 import cz.cvut.kbss.ontodriver.tentris.exception.TentrisDriverException;
-import cz.cvut.kbss.ontodriver.tentris.config.TentrisConfigParam;
 
 import java.util.HashSet;
 import java.util.List;
