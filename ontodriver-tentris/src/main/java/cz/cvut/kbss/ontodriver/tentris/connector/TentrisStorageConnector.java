@@ -10,7 +10,6 @@ import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jOntoDriverProperties;
 import cz.cvut.kbss.ontodriver.rdf4j.connector.Rdf4jConnectionProvider;
 import cz.cvut.kbss.ontodriver.rdf4j.exception.Rdf4jDriverException;
 import cz.cvut.kbss.ontodriver.tentris.exception.TentrisDriverException;
-import cz.cvut.kbss.ontodriver.tentris.config.TentrisConfigParam;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
@@ -18,6 +17,18 @@ import org.eclipse.rdf4j.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
+
+import java.io.IOException;
+import java.net.CookieManager;
+import java.net.HttpCookie;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TentrisStorageConnector implements Closeable, Rdf4jConnectionProvider {
 
@@ -46,7 +57,7 @@ public class TentrisStorageConnector implements Closeable, Rdf4jConnectionProvid
         return attempts;
     }
 
-    public void initializeRepository() {
+    public void initializeRepository() throws TentrisDriverException {
         final String serverUri = configuration.getStorageProperties().getPhysicalURI().toString();
         LOG.debug("Initializing connector to repository at {}", serverUri);
         final String username = configuration.getStorageProperties().getUsername();
@@ -55,11 +66,40 @@ public class TentrisStorageConnector implements Closeable, Rdf4jConnectionProvid
         final SPARQLRepository repo = new TentrisSparqlRepository(serverUri + "/" + QUERY_ENDPOINT, serverUri + "/" + UPDATE_ENDPOINT);
 
         if (username != null && !username.isBlank() && password != null && !password.isBlank()) {
-            repo.setUsernameAndPassword(username, password);
+            // basic auth. is currently not supported for tentris; only cookie based auth.
+            // repo.setUsernameAndPassword(username, password);
+            try {
+                String cookie = login(serverUri, username, password);
+
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Cookie", cookie);
+                repo.setAdditionalHttpHeaders(headers);
+            } catch(IOException | InterruptedException e) {
+                throw new TentrisDriverException("error occured during authentication", e);
+            }
         }
+
         repo.init();
         this.repository = repo;
         this.open = true;
+    }
+
+    private static String login(String baseUrl, String username, String password) throws IOException, InterruptedException {
+        CookieManager cm = new CookieManager();
+        HttpClient client = HttpClient.newBuilder().cookieHandler(cm).build();
+
+        String formData = String.format("username=%s&password=%s", URLEncoder.encode(username, StandardCharsets.UTF_8), URLEncoder.encode(password, StandardCharsets.UTF_8));
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + "/login"))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(formData))
+                .build();
+
+        client.send(request, HttpResponse.BodyHandlers.discarding());
+
+        HttpCookie cookie = cm.getCookieStore().getCookies().stream().filter(c -> c.getName().equals("tentris")).findFirst().get();
+        return String.format("%s=%s", cookie.getName(), cookie.getValue());
     }
 
     @Override
