@@ -17,7 +17,7 @@ tentris init
 
 tentris serve
 ```
-For more information about using Tentris, see the Tentris documentation(https://docs.tentris.io).
+For more information about using Tentris, see the Tentris [documentation](https://docs.tentris.io).
 
 ## Tentris OntoDriver Configuration
 
@@ -38,7 +38,31 @@ java -cp ... \
 
 ## Enabling Authentication
 
-Follows later
+To enable authentication in Tentris, you need to run the server with a custom configuration file that includes a `[serve.auth]` section.
+
+### Generate a default configuration file
+
+```sh
+tentris create-default-config > tentris-server-config.toml
+```
+
+Edit the generated file and add a `[serve.auth]` section. See the [configuration file documentation](https://docs.tentris.io/configuration_file.html) for all available options.
+
+### Create users before starting the server
+
+Before starting Tentris with authentication enabled, you must create at least one user and grant it the appropriate permissions. For example, to create a user named `adm` with `query` and `update` privileges:
+
+```sh
+tentris user add -G query,update adm
+```
+
+For a full overview of user roles and permission management, see the [user management documentation](https://docs.tentris.io/binary/user.html).
+
+### Start the server with your configuration
+
+```sh
+tentris --config tentris-server-config.toml serve
+```
 
 ## Running Examples
 
