@@ -1,23 +1,5 @@
 package cz.cvut.kbss.ontodriver.tentris.connector;
 
-import cz.cvut.kbss.ontodriver.Closeable;
-import cz.cvut.kbss.ontodriver.Wrapper;
-import cz.cvut.kbss.ontodriver.config.DriverConfiguration;
-import cz.cvut.kbss.ontodriver.exception.OntoDriverException;
-import cz.cvut.kbss.ontodriver.rdf4j.config.Constants;
-import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jConfigParam;
-import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jOntoDriverProperties;
-import cz.cvut.kbss.ontodriver.rdf4j.connector.Rdf4jConnectionProvider;
-import cz.cvut.kbss.ontodriver.rdf4j.exception.Rdf4jDriverException;
-import cz.cvut.kbss.ontodriver.tentris.exception.TentrisDriverException;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.RepositoryException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
-
 import java.io.IOException;
 import java.net.CookieManager;
 import java.net.HttpCookie;
@@ -29,6 +11,25 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import cz.cvut.kbss.ontodriver.Closeable;
+import cz.cvut.kbss.ontodriver.Wrapper;
+import cz.cvut.kbss.ontodriver.config.DriverConfiguration;
+import cz.cvut.kbss.ontodriver.exception.OntoDriverException;
+import cz.cvut.kbss.ontodriver.rdf4j.config.Constants;
+import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jConfigParam;
+import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jOntoDriverProperties;
+import cz.cvut.kbss.ontodriver.rdf4j.connector.Rdf4jConnectionProvider;
+import cz.cvut.kbss.ontodriver.rdf4j.exception.Rdf4jDriverException;
+import cz.cvut.kbss.ontodriver.tentris.exception.TentrisDriverException;
 
 public class TentrisStorageConnector implements Closeable, Rdf4jConnectionProvider {
 
