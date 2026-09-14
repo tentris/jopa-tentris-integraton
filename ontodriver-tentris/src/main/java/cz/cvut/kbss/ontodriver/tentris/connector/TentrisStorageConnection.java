@@ -18,8 +18,11 @@ import cz.cvut.kbss.ontodriver.rdf4j.exception.Rdf4jDriverException;
 /**
  * A {@link StorageConnection} resolving context loss on read.
  * <p>
- * {@code SPARQLConnection} answers {@code getStatements(...)} with a {@code CONSTRUCT} query. Problematic for size 1
- * queries that don't embed the context.
+ * {@code SPARQLConnection} sends the contexts of a scoped {@code getStatements(...)} as {@code default-graph-uri},
+ * which merges them into the default graph of the query.
+ * <p>
+ * <b>Requires the Tentris server to run with {@code default-graph-mode = "union"}.</b> A read that specifies no
+ * context means <i>all contexts</i> in RDF4J. 
  */
 public class TentrisStorageConnection extends StorageConnection {
 
@@ -28,32 +31,19 @@ public class TentrisStorageConnection extends StorageConnection {
     }
 
     @Override
-    public boolean containsStatement(Resource subject, IRI property, Value value, boolean includeInferred,
-                                     Set<IRI> contexts) throws Rdf4jDriverException {
-        if (super.containsStatement(subject, property, value, includeInferred, contexts)) {
-            return true;
-        }
-        if (!contexts.isEmpty()) {
-            return false;
-        }
-        // an unscoped check only reaches the default graph over SPARQL protocol, so also check every named context that currently exists.
-        for (Resource ctx : getContexts()) {
-            if (ctx instanceof IRI ctxIri
-                    && super.containsStatement(subject, property, value, includeInferred, Set.of(ctxIri))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
     public Collection<Statement> findStatements(Resource subject, IRI property, Value value,
                                                 boolean includeInferred, Set<IRI> contexts) throws Rdf4jDriverException {
-        final Collection<Statement> statements = super.findStatements(subject, property, value, includeInferred, contexts);
-        if (contexts.size() == 1) {
-            return retagWithContext(statements, contexts.iterator().next());
+        if (contexts.isEmpty()) {
+            return super.findStatements(subject, property, value, includeInferred, contexts);
         }
-        return statements;
+        // Scoping a read to contexts merges them into the query default graph, so the returned statements carry no
+        // context. Read each context separately, so that every statement can be retagged with the one it came from.
+        final Collection<Statement> result = new ArrayList<>();
+        for (IRI context : contexts) {
+            result.addAll(retagWithContext(
+                    super.findStatements(subject, property, value, includeInferred, Set.of(context)), context));
+        }
+        return result;
     }
 
     private Collection<Statement> retagWithContext(Collection<Statement> statements, IRI onlyContext) {
