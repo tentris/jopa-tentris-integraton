@@ -3,16 +3,14 @@ package cz.cvut.kbss.jopa;
 import java.net.URI;
 import java.util.List;
 
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
+
 import cz.cvut.kbss.jopa.TentrisOWL.ExampleEntity;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.EntityManagerFactory;
 import cz.cvut.kbss.jopa.model.query.TypedQuery;
-import cz.cvut.kbss.jopa.model.query.criteria.CriteriaBuilder;
-import cz.cvut.kbss.jopa.model.query.criteria.CriteriaQuery;
-import cz.cvut.kbss.jopa.model.query.criteria.Root;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
 
 /**
  * Shows the different ways a {@link TypedQuery} can be obtained 
@@ -60,7 +58,6 @@ public class TentrisTypedQuery {
 
             System.out.println("by label: " + examples.byLabel(em, "Typed Query Example"));
             System.out.println("named query: " + examples.namedQuery(em, "Typed Query Example"));
-            System.out.println("by label (criteria): " + examples.byLabelCriteria(em, "Typed Query Example"));
             System.out.println("first match: " + examples.firstMatch(em, "Typed Query Example"));
         } finally {
             em.close();

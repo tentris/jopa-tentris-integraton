@@ -1,5 +1,10 @@
 package cz.cvut.kbss.ontodriver.tentris;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import cz.cvut.kbss.ontodriver.Connection;
 import cz.cvut.kbss.ontodriver.OntologyStorageProperties;
 import cz.cvut.kbss.ontodriver.config.ConfigurationParameter;
@@ -20,15 +25,14 @@ import cz.cvut.kbss.ontodriver.rdf4j.exception.Rdf4jDriverException;
 import cz.cvut.kbss.ontodriver.rdf4j.loader.StatementLoaderFactory;
 import cz.cvut.kbss.ontodriver.tentris.exception.TentrisDriverException;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 class TentrisDriver implements AutoCloseable, ConnectionListener<Rdf4jConnection> {
 
-    private static final List<ConfigurationParameter> CONFIGS = List.of(DriverConfigParam.AUTO_COMMIT,
-        Rdf4jConfigParam.LOAD_ALL_THRESHOLD, Rdf4jConfigParam.RECONNECT_ATTEMPTS);
+    private static final List<ConfigurationParameter> CONFIGS = List.of(
+        DriverConfigParam.AUTO_COMMIT,
+        Rdf4jConfigParam.LOAD_ALL_THRESHOLD, 
+        Rdf4jConfigParam.RECONNECT_ATTEMPTS,
+        Rdf4jConfigParam.CONNECTION_REQUEST_TIMEOUT,
+        Rdf4jConfigParam.MAX_CONNECTION_POOL_SIZE);
 
     private final DriverConfiguration configuration;
     private boolean open;

@@ -91,3 +91,4 @@ Replace the class name with the example you want to run:
 - cz.cvut.kbss.jopa.TentrisTypedQuery
 - cz.cvut.kbss.jopa.TentrisSparqlResultSetMapping
 - cz.cvut.kbss.jopa.TentrisSOQL
+- cz.cvut.kbss.jopa.TentrisRemoveStatementson
