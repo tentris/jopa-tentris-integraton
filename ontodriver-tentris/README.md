@@ -56,10 +56,6 @@ DELETE DATA
 }
 ```
 
-Under `default-graph-mode = "union"` a read of the default graph answers from the union over all named graphs, so a copy of the triple residing in any named
-graph survives the removal and remains visible afterwards. The removal of a property value behaves the same way, the
-only difference being that it is expressed as a `DELETE WHERE` over a pattern instead of as `DELETE DATA`.
-
 Both remove operations therefore had to be adapted: the driver resolves all named contexts, adds the default graph
 itself, and passes the expanded collection to the corresponding operation of the parent class. The update above is thus
 sent as one command per graph within a single transaction:
