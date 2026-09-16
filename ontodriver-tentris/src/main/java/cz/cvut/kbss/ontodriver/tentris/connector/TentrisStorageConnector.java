@@ -1,6 +1,7 @@
 package cz.cvut.kbss.ontodriver.tentris.connector;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.URI;
@@ -12,11 +13,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.rdf4j.common.exception.RDF4JException;
+import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.vocabulary.SD;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,11 +72,12 @@ public class TentrisStorageConnector implements Closeable, Rdf4jConnectionProvid
 
         final SPARQLRepository repo = new TentrisSparqlRepository(serverUri + "/" + QUERY_ENDPOINT, serverUri + "/" + UPDATE_ENDPOINT);
 
+        String cookie = null;
         if (username != null && !username.isBlank() && password != null && !password.isBlank()) {
             // basic auth. is currently not supported for tentris; only cookie based auth.
             // repo.setUsernameAndPassword(username, password);
             try {
-                String cookie = login(serverUri, username, password);
+                cookie = login(serverUri, username, password);
 
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Cookie", cookie);
@@ -79,6 +86,8 @@ public class TentrisStorageConnector implements Closeable, Rdf4jConnectionProvid
                 throw new TentrisDriverException("error occured during authentication", e);
             }
         }
+
+        supportUnionMode(serverUri, cookie);
 
         repo.init();
         this.repository = repo;
@@ -101,6 +110,41 @@ public class TentrisStorageConnector implements Closeable, Rdf4jConnectionProvid
 
         HttpCookie cookie = cm.getCookieStore().getCookies().stream().filter(c -> c.getName().equals("tentris")).findFirst().get();
         return String.format("%s=%s", cookie.getName(), cookie.getValue());
+    }
+
+    /**
+     * Verifies that the store answers queries against the default graph with the union over all named graphs.
+     * <p>
+     * The SPARQL 1.1 service description the endpoint serves on a plain GET advertises this as
+     * {@code sd:feature sd:UnionDefaultGraph}.
+     *
+     * @throws TentrisDriverException If the service description cannot be read, or the store does not run in union mode
+     */
+    private static void supportUnionMode(String serverUri, String cookie) throws TentrisDriverException {
+        final HttpRequest.Builder request = HttpRequest.newBuilder()
+                .uri(URI.create(serverUri + "/" + QUERY_ENDPOINT))
+                // tentris only serves the service description as Turtle or RDF/XML
+                .header("Accept", RDFFormat.TURTLE.getDefaultMIMEType())
+                .GET();
+        if (cookie != null) {
+            request.header("Cookie", cookie);
+        }
+        final Model serviceDescription;
+        try {
+            final HttpResponse<InputStream> response =
+                    HttpClient.newHttpClient().send(request.build(), HttpResponse.BodyHandlers.ofInputStream());
+            try (InputStream body = response.body()) {
+                // the description refers to the endpoint relatively, so a base URI is required
+                serviceDescription = Rio.parse(body, serverUri, RDFFormat.TURTLE);
+            }
+        } catch (IOException | InterruptedException | RDF4JException e) {
+            throw new TentrisDriverException("Unable to read the service description of the endpoint at " + serverUri + ".", e);
+        }
+        // the service is described by a blank node, hence the wildcard subject
+        if (!serviceDescription.contains(null, SD.FEATURE_PROPERTY, SD.UNION_DEFAULT_GRAPH)) {
+            throw new TentrisDriverException(
+                    "The Tentris driver requires the store to run in union mode. Set default-graph-mode = \"union\" in the configuration the Tentris server is started with.");
+        }
     }
 
     @Override
