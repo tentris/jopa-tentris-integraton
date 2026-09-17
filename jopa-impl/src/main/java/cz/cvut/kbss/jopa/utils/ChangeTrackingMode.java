@@ -17,11 +17,11 @@
  */
 package cz.cvut.kbss.jopa.utils;
 
-import cz.cvut.kbss.jopa.model.JOPAPersistenceProperties;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import cz.cvut.kbss.jopa.model.JOPAPersistenceProperties;
 
 /**
  * Specifies how changes to managed objects are tracked in transactions.
@@ -51,8 +51,9 @@ public enum ChangeTrackingMode {
                                                           .filter(m -> m.toString().equalsIgnoreCase(configValue))
                                                           .findAny();
         return result.orElseGet(() -> {
-            // For RDF4J driver, no other mode makes sense as the driver does not support transactional snapshots
-            if ("cz.cvut.kbss.ontodriver.rdf4j.Rdf4jDataSource".equals(configuration.get(JOPAPersistenceProperties.DATA_SOURCE_CLASS))) {
+            // For RDF4J driver and Tentris driver, no other mode makes sense as the driver does not support transactional snapshots
+            if ("cz.cvut.kbss.ontodriver.rdf4j.Rdf4jDataSource".equals(configuration.get(JOPAPersistenceProperties.DATA_SOURCE_CLASS)) ||
+                "cz.cvut.kbss.ontodriver.tentris.TentrisDataSource".equals(configuration.get(JOPAPersistenceProperties.DATA_SOURCE_CLASS))) {
                 return ON_COMMIT;
             }
             // Default legacy mode

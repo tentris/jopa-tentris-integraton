@@ -25,13 +25,16 @@
         <module>ontodriver-owlapi</module>
         <module>ontodriver-rdf4j</module>
         <module>ontodriver-virtuoso</module>
+        <module>ontodriver-tentris</module>
         <module>jopa-impl</module>
         <module>jopa-integration-tests</module>
         <module>jopa-integration-tests-jena</module>
         <module>jopa-integration-tests-owlapi</module>
         <module>jopa-integration-tests-rdf4j</module>
         <module>jopa-integration-tests-virtuoso</module>
+        <module>jopa-integration-tests-tentris</module>
         <module>jopa-distribution</module>
+        <module>jopa-examples</module>
     </modules>
 
     <properties>
